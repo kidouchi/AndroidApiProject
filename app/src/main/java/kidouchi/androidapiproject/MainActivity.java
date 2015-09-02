@@ -1,16 +1,16 @@
 package kidouchi.androidapiproject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import kidouchi.androidapiproject.api.EtsyApi;
+import kidouchi.androidapiproject.google.GoogleServicesHelper;
 import kidouchi.androidapiproject.model.ActiveListings;
 
 public class MainActivity extends Activity {
@@ -21,6 +21,7 @@ public class MainActivity extends Activity {
     private View mProgressbar;
     private TextView mErrorView;
 
+    private GoogleServicesHelper mGoogleServicesHelper;
     private ListingAdapter adapter;
 
     @Override
@@ -39,20 +40,37 @@ public class MainActivity extends Activity {
 
         mRecyclerView.setAdapter(adapter);
 
-        if (savedInstanceState == null) {
-            showLoading();
-            EtsyApi.getActiveListings(adapter);
-        } else {
+        mGoogleServicesHelper = new GoogleServicesHelper(this, adapter);
+
+        showLoading(); // Show loading by default
+
+        if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(STATE_ACTIVE_LISTINGS)) {
                 adapter.success((ActiveListings) savedInstanceState.getParcelable(STATE_ACTIVE_LISTINGS), null);
-                showList();
-            } else {
-                showLoading();
-                EtsyApi.getActiveListings(adapter);
             }
         }
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleServicesHelper.connect();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleServicesHelper.disconnect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mGoogleServicesHelper.handleActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ListingAdapter.REQUEST_CODE_PLUS_ONE) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
