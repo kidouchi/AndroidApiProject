@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:foreground="@drawable/highlight_selector">
+             android:foreground="@drawable/highlight_selector"
+             android:padding="10dp" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,6 +26,7 @@
                 xmlns:plus="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_marginTop="10dp"
                 android:layout_alignTop="@+id/listing_share_btn"
                 android:layout_toLeftOf="@+id/listing_share_btn"
                 android:layout_toStartOf="@+id/listing_share_btn"
